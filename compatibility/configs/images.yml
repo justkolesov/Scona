@@ -1,0 +1,132 @@
+meta:
+  problem_name: "benchmark_images"
+  divergence: "KL"
+  regularization: 100
+  task: "identity"
+
+device_gpus:
+  glow_device: "cuda:2"
+  samples_device: "cuda:2"
+  ngpu: 2
+  
+  
+compatibility:
+  logging:
+    resume_training: false
+    log_path: "/home/mounted/LargeScaleOptimalTransport/compatibility/exp/images"
+    verbose_stderr: "info"
+  training:
+    batch_size: 64
+    num_batches: 100
+    n_iters: 5001
+    snapshot_freq: 1000
+    seed: 42
+  optim:
+    amsgrad: false
+    beta1: 0.9
+    eps:  0.000000001
+    optimizer: "Adam"
+    lr: 0.00001
+    weight_decay: 0.0
+  model:
+    architecture: "fcn"
+    hidden_layers: [2048,2048,2048,2048,2048,2048,2048,2048]
+
+baryproj:
+  logging:
+    log_path: "/home/mounted/LargeScaleOptimalTransport/baryproj/exp/images"
+    verbose_stderr: "info"
+  training:
+    n_iters: 1
+    
+
+scones:
+  logging:
+    log_path: "/home/mounted/LargeScaleOptimalTransport/scones/exp/images" 
+    verbose_stderr: "info"
+  compatibility:
+    ckpt_id: null
+    log_path: '/home/mounted/LargeScaleOptimalTransport/compatibility/exp/images'
+  training:
+    batch_size: 64
+    num_batches: 100
+    snapshot_iter: 50
+    
+transport:
+  coeff: 0.0005
+  cost: "half-l2-sq"
+  regularization: "entropy"
+  
+  
+logging:
+  verbose_stderr: "info"
+  verbose_logger: "info"
+
+
+  
+source:
+  data:
+    dim: 12288
+    channels: 3
+    dataset: "CELEBA-32px-even"
+    gaussian_dequantization: false
+    image_size: 64
+    logit_transform: false
+    num_workers: 0
+    random_flip: true
+    rescaled: false
+    uniform_dequantization: false
+    
+    
+target:
+  data:
+    channels: 3
+    dim: 12288
+    dataset: "CELEBA-odd"
+    gaussian_dequantization: false
+    image_size: 64
+    logit_transform: false
+    num_workers: 0
+    random_flip: true
+    rescaled: false
+    uniform_dequantization: false
+ 
+ 
+ncsn:
+  ncsn_path: "/home/mounted/LargeScaleOptimalTransport/ncsn_models"
+  device: "cuda:2"
+  fast_fid:
+    batch_size: 64
+    begin_ckpt: 5000
+    end_ckpt: 210000
+    ensemble: false
+    n_steps_each: 5
+    num_sources: 1
+    step_lr:  0.0000033
+    verbose: false
+  model:
+    ema: true
+    ema_rate: 0.999
+    ngf: 128
+    nonlinearity: elu
+    normalization: InstanceNorm++
+    num_classes: 500
+    sigma_begin: 90
+    sigma_dist: geometric
+    sigma_end: 0.01
+    spec_norm: false
+  sampling:
+    ckpt_id: 210000
+    data_init: true
+    denoise: true
+    fid: true
+    final_only: true
+    inpainting: false
+    interpolation: false
+    log_path:  
+    n_interpolations: 15
+    n_steps_each: 5
+    num_samples4fid: 64
+    samples_per_source: 1
+    sources_per_batch: 64
+    step_lr: 0.0000015

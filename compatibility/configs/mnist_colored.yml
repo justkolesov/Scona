@@ -1,0 +1,139 @@
+meta:
+  problem_name: "MNIST-colored"
+  divergence: "KL"
+  regularization: 25
+  task: "identity"
+
+
+device_gpus:
+  glow_device: "cuda:0"
+  samples_device: "cuda:0"
+  ngpu: [0,1,2]
+  
+  
+compatibility:
+  logging:
+    resume_training: false
+    log_path: "/home/mounted/LargeScaleOptimalTransport/compatibility/exp/mnist_colored"
+    verbose_stderr: "info"
+  training:
+    batch_size: 64
+    num_batches: 100
+    n_iters: 5001
+    snapshot_freq: 1000
+    seed: 42
+  optim:
+    amsgrad: false
+    beta1: 0.9
+    eps:  0.000000001
+    optimizer: "Adam"
+    lr: 0.00001
+    weight_decay: 0.0
+  model:
+    architecture: "fcn"
+    hidden_layers: [2048,2048,2048,2048,2048,2048,2048,2048]
+
+
+
+baryproj:
+  logging:
+    log_path: "/home/mounted/LargeScaleOptimalTransport/baryproj/exp/mnist_colored"
+    verbose_stderr: "info"
+  training:
+    n_iters: 1
+    
+
+scones:
+  logging:
+    log_path: "/home/mounted/LargeScaleOptimalTransport/scones/exp/mnist_colored" 
+    verbose_stderr: "info"
+  compatibility:
+    ckpt_id: null
+    log_path: '/home/mounted/LargeScaleOptimalTransport/compatibility/exp/mnist_colored'
+  training:
+    batch_size: 64
+    num_batches: 100
+    snapshot_iter: 100
+
+
+transport:
+  coeff: 25
+  cost: "half-l2-sq"
+  regularization: "entropy"
+  
+  
+logging:
+  verbose_stderr: "info"
+  verbose_logger: "info"
+ 
+source:
+  data:
+    dim: 3072
+    channels: 3
+    dataset: "MNIST-colored_2"
+    gaussian_dequantization: false
+    image_size: 32
+    logit_transform: false
+    num_workers: 0
+    random_flip: false
+    rescaled: false
+    uniform_dequantization: false
+    exp: "/home/mounted/LargeScaleOptimalTransport/data" 
+    
+target:
+  data:
+    dim: 3072
+    channels: 3
+    dataset: "MNIST-colored_3"
+    gaussian_dequantization: false
+    image_size: 32
+    logit_transform: false
+    num_workers: 0
+    random_flip: false
+    rescaled: false
+    uniform_dequantization: false
+    exp: "/home/mounted/LargeScaleOptimalTransport/data" 
+ 
+ncsn:
+  ncsn_path: "/home/mounted/ncsnv2/exp/logs/mnist_colored/"
+  device: "cuda:0"
+  
+  fast_fid:
+    batch_size: 64
+    begin_ckpt: 5000
+    end_ckpt: 300000
+    ensemble: false
+    n_steps_each: 7
+    num_sources: 1
+    step_lr: 0.0000062
+    verbose: false
+    
+  model:
+    ema: true
+    ema_rate: 0.999
+    ngf: 128
+    nonlinearity: elu
+    normalization: InstanceNorm++
+    num_classes: 232
+    sigma_begin: 50
+    sigma_dist: geometric
+    sigma_end: 0.01
+    spec_norm: false
+    
+  sampling:
+    ckpt_id: 100000
+    data_init: true
+    denoise: true
+    fid: true
+    final_only: true
+    inpainting: false
+    interpolation: false
+    log_path:  
+    n_interpolations: 15
+    n_steps_each: 5
+    num_samples4fid: 10000
+    samples_per_source: 1
+    sources_per_batch: 64
+    step_lr: 0.0000062
+    
+image_folder: "/home/mounted/LargeScaleOptimalTransport/results/"

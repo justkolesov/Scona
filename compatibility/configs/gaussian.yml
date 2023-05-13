@@ -1,0 +1,160 @@
+meta:
+  problem_name: "gaussian_128"
+  task: ""
+  divergence: ""
+  regularization: ""
+  
+scones:
+  logging:
+    log_path: '/home/mounted/LargeScaleOptimalTransport/scones/exp'
+    verbose_stderr: 'info'
+  compatibility:
+    ckpt_id: null
+    log_path: '/home/mounted/LargeScaleOptimalTransport/compatibility/exp'
+  sampling:
+    snapshot_freq: 200 
+  training:
+    batch_size: 1024
+    
+     
+     
+compatibility:
+  logging:
+    log_path: '/home/mounted/LargeScaleOptimalTransport/compatibility/exp'
+    verbose_stderr: 'info'
+    resume_training: false
+     
+  training:
+    seed: 42
+    batch_size: 1024
+    snapshot_freq: 1000
+    n_iters: 5001
+  optim:
+    optimizer: 'Adam'
+    beta2: 0.999
+    beta1: 0.9
+    lr: 0.00001
+    weight_decay: 0.000
+    amsgrad: false
+    eps: 0.00000001
+  model:
+    architecture: 'fcn'
+    hidden_layers: [2048, 2048, 2048, 2048, 2048, 2048, 2048, 2048]
+  
+ 
+  
+baryproj:
+  logging:
+    log_path: '/home/mounted/LargeScaleOptimalTransport/baryproj/exp'
+    verbose_stderr: 'info'
+    resume_training: false
+  training:
+    seed: 42
+    batch_size: 256
+    n_iters: 5001
+    snapshot_freq: 1000
+    sample_freq: 1000
+    metrics_freq: 1000
+  optim:
+    optimizer: 'Adam'
+    beta2: 0.999
+    beta1: 0.9
+    lr: 0.001
+    weight_decay: 0.0
+    amsgrad: false
+    eps: 0.00000001 
+  model:
+    architecture: 'fcn'
+    hidden_layers: [1024, 2048, 4096, 2048, 1024]
+  compatibility:
+    ckpt_id: null
+    model:
+      architecture: 'fcn'
+      hidden_layers: [2048, 2048, 2048, 2048, 2048, 2048, 2048, 2048]
+    
+    
+  
+transport:
+  coeff: 10
+  regularization: 'entropy'
+  cost: "half-l2-sq"
+  
+  
+logging:
+  verbose_stderr: 'info'
+  verbose_logger: 'info'
+
+device_gpus:
+  ngpu: 1
+
+source:
+  data:
+    dataset: "GAUSSIAN"
+    benchmark_data_path: "/home/mounted/EntropicOTBenchmark/benchmark_data"
+    dim: 128
+    image_size: 0
+    channels: 0
+    logit_transform: false
+    uniform_dequantization: false
+    gaussian_dequantization: false
+    random_flip: false
+    rescaled: false
+    num_workers: 0
+
+target:
+  data:
+    dataset: "GAUSSIAN"
+    benchmark_data_path: "/home/mounted/EntropicOTBenchmark/benchmark_data"
+    dim: 128
+    image_size: 0
+    channels: 0
+    logit_transform: false
+    uniform_dequantization: false
+    gaussian_dequantization: false
+    random_flip: false
+    rescaled: false
+    num_workers: 0
+
+
+
+ncsn:
+  sampling:
+    log_path: pretrained/ncsn/celeba
+    sources_per_batch: 1024
+    samples_per_source: 1
+    data_init: true
+    step_lr: 0.0015 
+    n_steps_each: 5000
+    ckpt_id: 210000
+    final_only: true
+    fid: true
+    denoise: true
+    num_samples4fid: 5000
+    inpainting: false
+    interpolation: false
+    n_interpolations: 15
+    sample_every: 1
+
+  fast_fid:
+    batch_size: 1000
+    num_sources: 1000
+    step_lr: 0.0000033
+    n_steps_each: 15
+    begin_ckpt: 5000
+    end_ckpt: 210000
+    verbose: false
+    ensemble: false
+
+  model:
+    sigma_begin: 90
+    num_classes: 500
+    ema: true
+    ema_rate: 0.999
+    spec_norm: false
+    sigma_dist: geometric
+    sigma_end: 0.01
+    normalization: InstanceNorm++
+    nonlinearity: elu
+    ngf: 128
+metrics:
+  samp_metrics: 10000
